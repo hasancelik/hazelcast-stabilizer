@@ -90,7 +90,6 @@ public class Provisioner {
         bash.copyToAgentStabilizerDir(ip, STABILIZER_HOME + "/bin/", "bin");
         bash.copyToAgentStabilizerDir(ip, STABILIZER_HOME + "/conf/", "conf");
         bash.copyToAgentStabilizerDir(ip, STABILIZER_HOME + "/jdk-install/", "jdk-install");
-
         bash.copyToAgentStabilizerDir(ip, STABILIZER_HOME + "/resources/", "resources");
 
         // we don't copy all jars to the agent since most of them are not needed.

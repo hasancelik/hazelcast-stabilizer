@@ -15,6 +15,24 @@
                 <!--MEMBERS-->
             </tcp-ip>
         </join>
+
+        <ssl enabled="true">
+            <factory-class-name>
+                <!--default-->
+                com.hazelcast.nio.ssl.BasicSSLContextFactory
+            </factory-class-name>
+            <properties>
+                <!--should be filled according to resources path in a stabilizer-->
+                <property name="javax.net.ssl.keyStore">""</property>
+                <property name="javax.net.ssl.trustStore">""</property>
+                <property name="javax.net.ssl.keyStorePassword">"123456"</property>
+                <property name="javax.net.ssl.trustStorePassword">"123456"</property>
+                <property name="keyManagerAlgorithm">SunX509</property>
+                <property name="trustManagerAlgorithm">SunX509</property>
+                <property name="protocol">TLS</property>
+            </properties>
+        </ssl>
+
     </network>
 
     <partition-group enabled="true" group-type="HOST_AWARE">
