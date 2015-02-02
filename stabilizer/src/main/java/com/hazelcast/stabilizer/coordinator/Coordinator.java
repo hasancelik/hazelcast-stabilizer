@@ -52,7 +52,7 @@ import static java.lang.String.format;
 public class Coordinator {
 
     public final static File STABILIZER_HOME = getStablizerHome();
-    public final static String RESOURCES_HOME = STABILIZER_HOME.getAbsolutePath() + "/resources/*";
+    public final static String RESOURCES_HOME = STABILIZER_HOME.getAbsolutePath() + "/resources";
     private final static Logger log = Logger.getLogger(Coordinator.class);
 
     //options.
@@ -374,11 +374,12 @@ public class Coordinator {
         log.info(msg);
     }
 
-    public void uploadResourcesToWorkers() throws IOException {
+    private void uploadResourcesToWorkers() throws IOException {
         if(RESOURCES_HOME == null){
             log.info("Resource files does not exist");
         }
-        List<File> files = Utils.getFilesFromClassPath(RESOURCES_HOME);
+        log.info("Resource path is:" + RESOURCES_HOME);
+        List<File> files = Utils.getFilesFromClassPath(RESOURCES_HOME + "/*");
         for (String ip : agentsClient.getPublicAddresses()){
             for (File file : files){
                 String syncCommand = format("rsync -avv -e \"ssh %s\" %s %s@%s:hazelcast-stabilizer-%s/workers/%s/resources",
