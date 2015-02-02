@@ -52,7 +52,7 @@ import static java.lang.String.format;
 public class Coordinator {
 
     public final static File STABILIZER_HOME = getStablizerHome();
-    public final static String RESOURCES_HOME = STABILIZER_HOME.getAbsolutePath() + "/resources";
+    public final static String RESOURCES_HOME = STABILIZER_HOME.getAbsolutePath() + "/resources/*";
     private final static Logger log = Logger.getLogger(Coordinator.class);
 
     //options.
