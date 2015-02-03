@@ -3,6 +3,8 @@ package com.hazelcast.stabilizer.agent.workerjvm;
 import com.hazelcast.stabilizer.Utils;
 import com.hazelcast.stabilizer.agent.Agent;
 import com.hazelcast.stabilizer.agent.SpawnWorkerFailedException;
+import com.hazelcast.stabilizer.common.StabilizerProperties;
+import com.hazelcast.stabilizer.provisioner.Bash;
 import com.hazelcast.stabilizer.worker.ClientWorker;
 import com.hazelcast.stabilizer.worker.MemberWorker;
 import org.apache.log4j.Logger;
@@ -19,9 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.hazelcast.stabilizer.Utils.getHostAddress;
-import static com.hazelcast.stabilizer.Utils.getStablizerHome;
-import static com.hazelcast.stabilizer.Utils.writeText;
+import static com.hazelcast.stabilizer.Utils.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
@@ -32,10 +32,15 @@ public class WorkerJvmLauncher {
     private final AtomicBoolean javaHomePrinted = new AtomicBoolean();
     private final static String CLASSPATH = System.getProperty("java.class.path");
     private final static File STABILIZER_HOME = getStablizerHome();
+    public final static String RESOURCES_HOME = STABILIZER_HOME.getAbsolutePath() + "/resources";
     private final static String CLASSPATH_SEPARATOR = System.getProperty("path.separator");
     private final static AtomicLong WORKER_ID_GENERATOR = new AtomicLong();
+    private final String workersPath = "/home/users/stabilizer/hazelcast-stabilizer-0.4-SNAPSHOT/workers";
+
 
     private final WorkerJvmSettings settings;
+    private StabilizerProperties props = new StabilizerProperties();
+    private Bash bash = new Bash(props);
     private final Agent agent;
     private final ConcurrentMap<String, WorkerJvm> workerJVMs;
     private File hzFile;
@@ -125,7 +130,41 @@ public class WorkerJvmLauncher {
         workerJvm.process = process;
         workerJvm.mode = WorkerJvm.Mode.valueOf(mode.toUpperCase());
         workerJVMs.put(workerId, workerJvm);
+        uploadResourcesToWorker(workerId);
         return workerJvm;
+    }
+
+    private void uploadResourcesToWorker(String workerId) throws IOException {
+        if(!new File(RESOURCES_HOME).exists()){
+            log.info("Resource files does not exist(worker)");
+            return;
+        }
+        if (!new File(workersPath).exists()){
+            log.info("workerPath is wrong!!!!!");
+            return;
+        }
+        final String testSuiteId = agent.getTestSuite().id;
+        String mkdirPath = format("%s/%s/%s/",
+                workersPath,
+                testSuiteId,
+                workerId);
+        String mkdirCommand = format("mkdir %s/",
+                mkdirPath
+                );
+        bash.execute(mkdirCommand);
+        if (!new File(mkdirPath).exists()){
+            log.warn("workerId file could not create");
+            return;
+        }
+        log.warn("workerId file created");
+        String cpCommand = format("cp -rfv %s/%s/resources/ %s/%s/%s/",
+                workersPath,
+                testSuiteId,
+                workersPath,
+                testSuiteId,
+                workerId);
+        bash.execute(cpCommand);
+
     }
 
     private void generateWorkerStartScript(String mode, WorkerJvm workerJvm) {

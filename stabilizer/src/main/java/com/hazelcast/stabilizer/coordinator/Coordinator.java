@@ -373,17 +373,11 @@ public class Coordinator {
     }
 
     private void uploadResourcesToAgents() throws IOException {
-        File resourceDir = null;
-        try {
-            resourceDir = new File(RESOURCES_HOME);
-        } catch (Exception e) {
-            log.info(e.getClass());
+        if(!new File(RESOURCES_HOME).exists()){
+            log.info("Resource files does not exist(agent)");
+            return;
         }
-
-        if(!resourceDir.exists()){
-            log.info("Resource files does not exist");
-        }
-        log.info("Resource path is:" + RESOURCES_HOME);
+        log.info("RESOURCES HOME:" + RESOURCES_HOME);
         List<File> files = Utils.getFilesFromClassPath(RESOURCES_HOME);
         for (String ip : agentsClient.getPublicAddresses()){
             for (File file : files){
