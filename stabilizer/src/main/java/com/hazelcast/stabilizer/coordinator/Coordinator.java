@@ -31,10 +31,8 @@ import com.hazelcast.stabilizer.test.Failure;
 import com.hazelcast.stabilizer.test.TestSuite;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import javax.annotation.processing.FilerException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -124,7 +122,7 @@ public class Coordinator {
 
         agentsClient.initTestSuite(testSuite);
 
-        uploadResourcesToWorkers();
+        uploadResourcesToAgents();
         uploadWorkerClassPath();
         //todo: copy the hazelcast jars
         uploadYourKitIfNeeded();
@@ -374,8 +372,14 @@ public class Coordinator {
         log.info(msg);
     }
 
-    private void uploadResourcesToWorkers() throws IOException {
-        File resourceDir = new File(RESOURCES_HOME);
+    private void uploadResourcesToAgents() throws IOException {
+        File resourceDir = null;
+        try {
+            resourceDir = new File(RESOURCES_HOME);
+        } catch (Exception e) {
+            log.info(e.getClass());
+        }
+
         if(!resourceDir.exists()){
             log.info("Resource files does not exist");
         }
