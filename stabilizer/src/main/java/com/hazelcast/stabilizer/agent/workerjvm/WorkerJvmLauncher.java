@@ -135,36 +135,24 @@ public class WorkerJvmLauncher {
     }
 
     private void uploadResourcesToWorker(String workerId) throws IOException {
-//        if(!new File(RESOURCES_HOME).exists()){
-//            log.info("Resource files does not exist(worker)");
-//            return;
-//        }
-        if (!new File(workersPath).exists()){
-            log.info("workerPath is wrong!!!!!");
-            return;
-        }
         final String testSuiteId = agent.getTestSuite().id;
-        String mkdirPath = format("%s/%s/%s/",
-                workersPath,
-                testSuiteId,
-                workerId);
-        String mkdirCommand = format("mkdir -p %s",
-                mkdirPath
-                );
-        bash.execute(mkdirCommand);
-        if (!new File(mkdirPath).exists()){
-            log.warn("workerId file could not create");
-            return;
-        }
-        log.warn("workerId file created");
-        String cpCommand = format("cp -rfv %s/%s/resources/ %s/%s/%s/",
+//        String mkdirPath = format("%s/%s/%s/",
+//                workersPath,
+//                testSuiteId,
+//                workerId);
+//        String mkdirCommand = format("mkdir -p %s",
+//                mkdirPath
+//                );
+//        bash.execute(mkdirCommand);
+//        log.warn("WorkerId file created");
+        String cpCommand = format("cp -rfv %s/%s/resources/* %s/%s/%s/",
                 workersPath,
                 testSuiteId,
                 workersPath,
                 testSuiteId,
                 workerId);
         bash.execute(cpCommand);
-
+        log.info(format("Finished copying resources file '%s' to worker", RESOURCES_HOME));
     }
 
     private void generateWorkerStartScript(String mode, WorkerJvm workerJvm) {
