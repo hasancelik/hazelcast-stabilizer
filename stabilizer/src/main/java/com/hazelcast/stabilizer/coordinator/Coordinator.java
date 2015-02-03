@@ -375,11 +375,11 @@ public class Coordinator {
     }
 
     private void uploadResourcesToWorkers() throws IOException {
-        if(RESOURCES_HOME == null){
+        List<File> files = Utils.getFilesFromClassPath(RESOURCES_HOME);
+        if(files.isEmpty()){
             log.info("Resource files does not exist");
         }
         log.info("Resource path is:" + RESOURCES_HOME);
-        List<File> files = Utils.getFilesFromClassPath(RESOURCES_HOME);
         for (String ip : agentsClient.getPublicAddresses()){
             for (File file : files){
                 String syncCommand = format("rsync -avv -e \"ssh %s\" %s %s@%s:hazelcast-stabilizer-%s/workers/%s/",
