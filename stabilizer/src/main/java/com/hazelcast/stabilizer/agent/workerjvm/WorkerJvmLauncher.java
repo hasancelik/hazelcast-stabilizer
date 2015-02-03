@@ -135,10 +135,10 @@ public class WorkerJvmLauncher {
     }
 
     private void uploadResourcesToWorker(String workerId) throws IOException {
-        if(!new File(RESOURCES_HOME).exists()){
-            log.info("Resource files does not exist(worker)");
-            return;
-        }
+//        if(!new File(RESOURCES_HOME).exists()){
+//            log.info("Resource files does not exist(worker)");
+//            return;
+//        }
         if (!new File(workersPath).exists()){
             log.info("workerPath is wrong!!!!!");
             return;
