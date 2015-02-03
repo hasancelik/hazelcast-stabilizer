@@ -148,7 +148,7 @@ public class WorkerJvmLauncher {
                 workersPath,
                 testSuiteId,
                 workerId);
-        String mkdirCommand = format("mkdir %s",
+        String mkdirCommand = format("mkdir -p %s",
                 mkdirPath
                 );
         bash.execute(mkdirCommand);
