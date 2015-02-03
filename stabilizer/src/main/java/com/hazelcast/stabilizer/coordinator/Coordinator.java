@@ -374,7 +374,7 @@ public class Coordinator {
 
     private void uploadResourcesToAgents() throws IOException {
         if(!new File(RESOURCES_HOME).exists()){
-            log.info("Resource files does not exist(agent)");
+            log.info("Resource files does not exist");
             return;
         }
         log.info("RESOURCES HOME:" + RESOURCES_HOME);
