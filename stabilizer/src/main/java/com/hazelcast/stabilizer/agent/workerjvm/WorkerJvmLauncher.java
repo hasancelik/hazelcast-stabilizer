@@ -136,7 +136,7 @@ public class WorkerJvmLauncher {
 
     private void uploadResourcesToWorker(String workerId) throws IOException {
         final String testSuiteId = agent.getTestSuite().id;
-        if(!new File(workersPath + testSuiteId + "/resources/").exists()){
+        if(!new File(workersPath + "/" + testSuiteId + "/resources/").exists()){
             log.info("Resources files are not in the agent");
             return;
         }
@@ -147,7 +147,7 @@ public class WorkerJvmLauncher {
                 testSuiteId,
                 workerId);
         bash.execute(cpCommand);
-        log.info(format("Finished copying resource files '%s' to worker", RESOURCES_HOME));
+        log.info(format("Finished copying resource files from agent to worker"));
     }
 
     private void generateWorkerStartScript(String mode, WorkerJvm workerJvm) {
