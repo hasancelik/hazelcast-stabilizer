@@ -26,6 +26,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import static com.hazelcast.stabilizer.Utils.sleepMillis;
 import static java.lang.String.format;
+import static org.junit.Assert.assertEquals;
 
 public class TestUtils {
 
@@ -112,6 +113,12 @@ public class TestUtils {
 
     public static void assertTrueEventually(AssertTask task) {
         assertTrueEventually(task, ASSERT_TRUE_EVENTUALLY_TIMEOUT);
+    }
+
+    public static void assertEqualsByteArray(byte[] expected,byte[] current){
+        for(int k = 0; k < expected.length; k++){
+            assertEquals(expected[k],current[k]);
+        }
     }
 
     /**

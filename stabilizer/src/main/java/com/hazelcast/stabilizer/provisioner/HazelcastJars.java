@@ -54,6 +54,7 @@ public class HazelcastJars {
             if (eejars) {
                 mavenRetrieve("hazelcast-enterprise", version);
                 mavenRetrieve("hazelcast-enterprise-client", version);
+                log.info("HAZELCAST-ENTERPEISE : ENABLED");
             } else {
                 mavenRetrieve("hazelcast", version);
                 mavenRetrieve("hazelcast-client", version);
