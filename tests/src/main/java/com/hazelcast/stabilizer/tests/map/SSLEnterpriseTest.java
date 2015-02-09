@@ -29,7 +29,6 @@ public class SSLEnterpriseTest {
 
     //properties
     public String basename = "sslEnterprise";
-//    public static String enterpriseLicence;
     public int threadCount = 3;
     public int keyCount = 1000;
     public int keyLength = 10;
@@ -41,12 +40,6 @@ public class SSLEnterpriseTest {
 
     private static final int[] byteSize = {16 * 1024, 32 * 1024, 64 * 1024, 128 * 1024};
     private final String[] keys = KeyUtils.generateStringKeys(keyCount, keyLength, keyLocality, targetInstance);
-
-    static {
-        System.setProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY, "DIEGMPFOKA99301XR0059U1S0S0603");
-        System.setProperty("hazelcast.version.check.enabled", "false");
-        System.setProperty("java.net.preferIPv4Stack", "true");
-    }
 
     public static void main(String[] args) throws Throwable {
         SSLEnterpriseTest test = new SSLEnterpriseTest();
