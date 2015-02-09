@@ -7,6 +7,9 @@
         <name>workers</name>
     </group>
 
+    <!--This licence key is a trial-->
+    <license-key>DIEGMPFOKA99301XR0059U1S0S0603</license-key>
+
     <network>
         <port port-count="200" auto-increment="true">5701</port>
         <join>
@@ -15,6 +18,22 @@
                 <!--MEMBERS-->
             </tcp-ip>
         </join>
+
+        <ssl enabled="true">
+            <factory-class-name>
+                com.hazelcast.nio.ssl.BasicSSLContextFactory
+            </factory-class-name>
+            <properties>
+                <property name="javax.net.ssl.keyStore">hazelcast.keystore</property>
+                <property name="javax.net.ssl.keyStorePassword">123456</property>
+                <property name="javax.net.ssl.trustStore">hazelcast.truststore</property>
+                <property name="javax.net.ssl.trustStorePassword">123456</property>
+                <property name="keyManagerAlgorithm">SunX509</property>
+                <property name="trustManagerAlgorithm">SunX509</property>
+                <property name="protocol">TLS</property>
+            </properties>
+        </ssl>
+
     </network>
 
     <partition-group enabled="true" group-type="HOST_AWARE">

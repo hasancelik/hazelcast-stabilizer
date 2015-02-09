@@ -14,6 +14,22 @@
         <cluster-members>
             <!--MEMBERS-->
         </cluster-members>
+
+        <ssl enabled="true">
+            <factory-class-name>
+                com.hazelcast.nio.ssl.BasicSSLContextFactory
+            </factory-class-name>
+            <properties>
+                <property name="javax.net.ssl.keyStore">hazelcast.keystore</property>
+                <property name="javax.net.ssl.keyStorePassword">123456</property>
+                <property name="javax.net.ssl.trustStore">hazelcast.truststore</property>
+                <property name="javax.net.ssl.trustStorePassword">123456</property>
+                <property name="keyManagerAlgorithm">SunX509</property>
+                <property name="trustManagerAlgorithm">SunX509</property>
+                <property name="protocol">TLS</property>
+            </properties>
+        </ssl>
+
     </network>
 
     <serialization>
