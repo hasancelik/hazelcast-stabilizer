@@ -42,7 +42,7 @@ public class SSLEnterpriseTest {
     private final String[] keys = KeyUtils.generateStringKeys(keyCount, keyLength, keyLocality, targetInstance);
 
     static {
-        System.setProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY, "O9NJKFHMGPB311Q0YST305Y60Q0001");
+        System.setProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY, "GJFLMIHCPOK13RX798V01521990W99");
         System.setProperty("hazelcast.version.check.enabled", "false");
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
