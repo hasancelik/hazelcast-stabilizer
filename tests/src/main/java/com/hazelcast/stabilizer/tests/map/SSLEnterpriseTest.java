@@ -61,8 +61,8 @@ public class SSLEnterpriseTest {
         }
         spawner.awaitCompletion();
     }
-
-    @Verify
+    
+    @Verify(global = false)
     public void verify() {
         double totalByte = 0;
         for(String k : map.keySet()){
