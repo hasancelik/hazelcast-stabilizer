@@ -116,7 +116,10 @@ public class TestUtils {
     }
 
     public static void assertEqualsByteArray(byte[] expected,byte[] current){
-        for(int k = 0; k < expected.length; k++){
+        if(!(expected.length == current.length)){
+            throw new IndexOutOfBoundsException("ByteArray sizes are not equals");
+        }
+        for (int k = 0; k < expected.length; k++) {
             assertEquals(expected[k], current[k]);
         }
     }
