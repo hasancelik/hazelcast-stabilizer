@@ -313,7 +313,7 @@ public class Provisioner {
         bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/utils-*", "lib");
 
         // upload Hazelcast JARs
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/hazelcast*", "lib");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/hazelcast*", "lib/");
 
         // we don't copy all JARs to the agent to increase upload speed, e.g. YourKit is uploaded on demand by the Coordinator
         bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/cache-api*", "lib");
