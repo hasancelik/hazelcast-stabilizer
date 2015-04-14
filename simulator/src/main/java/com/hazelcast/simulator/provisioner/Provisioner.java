@@ -307,22 +307,22 @@ public class Provisioner {
         bash.sshQuiet(ip, format("rm -f hazelcast-simulator-%s/lib/*", getSimulatorVersion()));
 
         // upload Simulator JARs
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/simulator-*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/probes-*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/tests-*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/utils-*", "lib");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/simulator-*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/probes-*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/tests-*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/utils-*", "lib/");
 
         // upload Hazelcast JARs
         bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/hazelcast*", "lib/");
 
         // we don't copy all JARs to the agent to increase upload speed, e.g. YourKit is uploaded on demand by the Coordinator
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/cache-api*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/commons-codec*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/commons-lang3*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/jopt*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/junit*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/HdrHistogram-*", "lib");
-        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/log4j*", "lib");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/cache-api*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/commons-codec*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/commons-lang3*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/jopt*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/junit*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/HdrHistogram-*", "lib/");
+        bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/lib/log4j*", "lib/");
 
         // upload remaining files
         bash.uploadToAgentSimulatorDir(ip, SIMULATOR_HOME + "/bin/", "bin");
