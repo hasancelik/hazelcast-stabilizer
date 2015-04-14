@@ -56,7 +56,7 @@ public abstract class AbstractWorker<O extends Enum<O>> implements IWorker {
             timeStep(selector.select());
             intervalProbe.done();
 
-            increaseIteration();
+//            increaseIteration();
         }
 
         afterRun();

@@ -17,7 +17,7 @@ public abstract class AbstractMonotonicWorker extends AbstractWorker {
             timeStep();
             intervalProbe.done();
 
-            increaseIteration();
+//            increaseIteration();
         }
 
         afterRun();
