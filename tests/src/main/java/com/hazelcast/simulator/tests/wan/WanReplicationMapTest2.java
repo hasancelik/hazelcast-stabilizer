@@ -35,6 +35,7 @@ public class WanReplicationMapTest2 {
     public double putProb = 0.6;
     public double getProb = 0.2;
     public double removeProb = 0.2;
+    public int coolDownSleep = 5000;
 
     public String repMapName = "repMap";
     public String keyPreFix;
@@ -95,7 +96,7 @@ public class WanReplicationMapTest2 {
 
     @Verify(global = false)
     public void verify() throws Exception {
-        Thread.sleep(5000);
+        Thread.sleep(coolDownSleep);
 
         log.info(id+": replication active = " + active);
 
