@@ -1,6 +1,5 @@
 package com.hazelcast.simulator.tests.wan;
 
-
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.logging.ILogger;
@@ -18,16 +17,14 @@ import static com.hazelcast.simulator.utils.TestUtils.assertTrueEventually;
 import static junit.framework.TestCase.assertEquals;
 
 public class WanReplicationRingTopMapTest {
-
     private static final ILogger log = Logger.getLogger(WanReplicationRingTopMapTest.class);
 
     public int threadCount = 3;
-    public int keyCount = 1000;
+    public int keyCount = 10;
     public int keyRangeStart = 0;
     public int clusterCount = 3;
 
     public String wanRepMapName = "repMap";
-    public String clusterName;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -37,14 +34,13 @@ public class WanReplicationRingTopMapTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        clusterName = targetInstance.getConfig().getGroupConfig().getName();
     }
 
     @Warmup(global = true)
     public void warmup() {
         IMap map = targetInstance.getMap(wanRepMapName);
         for (int key = keyRangeStart; key < keyRangeStart + keyCount; key++) {
-            map.put(key, key + clusterName);
+            map.put(key, key);
         }
     }
 
@@ -56,25 +52,18 @@ public class WanReplicationRingTopMapTest {
     private class Worker extends AbstractMonotonicWorker {
         @Override
         protected void timeStep() {
-            IMap map = targetInstance.getMap(wanRepMapName);
-            for (int key = keyRangeStart; key < keyRangeStart + keyCount; key++) {
-                map.put(key,key);
-//                map.put(key, key + clusterName);
-            }
+
         }
     }
 
     @Verify(global = false)
     public void verify() throws Exception {
-        log.info("cluster size = " + targetInstance.getCluster().getMembers().size());
-        log.info("cluster name = " + clusterName);
 
         assertTrueEventually(new AssertTask() {
             public void run() throws Exception {
                 IMap map = targetInstance.getMap(wanRepMapName);
-                assertEquals("mapName=" + map.getName() + " size ", keyCount, map.size());
+                assertEquals("mapName=" + map.getName() + " size ", clusterCount * keyCount, map.size());
                 for (int key = 0; key < clusterCount * keyCount; key++) {
-//                    assertEquals("mapName=" + map.getName() + " key=" + key, key + clusterName, map.get(key));
                     assertEquals("mapName=" + map.getName() + " key=" + key, key, map.get(key));
                 }
             }
