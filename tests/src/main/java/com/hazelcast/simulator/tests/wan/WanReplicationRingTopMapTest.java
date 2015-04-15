@@ -59,6 +59,9 @@ public class WanReplicationRingTopMapTest {
     @Verify(global = false)
     public void verify() throws Exception {
 
+        IMap map = targetInstance.getMap(wanRepMapName);
+        log.info("keys "+map.keySet());
+
         assertTrueEventually(new AssertTask() {
             public void run() throws Exception {
                 IMap map = targetInstance.getMap(wanRepMapName);
