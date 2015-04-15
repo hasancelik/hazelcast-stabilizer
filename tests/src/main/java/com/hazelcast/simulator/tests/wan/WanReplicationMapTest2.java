@@ -40,6 +40,7 @@ public class WanReplicationMapTest2 {
     public String keyPreFix;
 
 
+    private String id;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
 
@@ -49,7 +50,7 @@ public class WanReplicationMapTest2 {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-
+        id = testContext.getTestId();
         operationSelectorBuilder.addOperation(Operation.PUT, putProb)
                                 .addOperation(Operation.GET, getProb)
                                 .addOperation(Operation.REMOVE, removeProb);
@@ -96,13 +97,12 @@ public class WanReplicationMapTest2 {
     public void verify() throws Exception {
         Thread.sleep(5000);
 
-        log.info("cluster size = " + targetInstance.getCluster().getMembers().size());
-        log.info("replication active = " + active);
+        log.info(id+": replication active = " + active);
 
         for (int i=0; i<mapCount; i++) {
             IMap map = targetInstance.getMap(repMapName + "" + i);
-            log.info("mapName=" + map.getName() + " size=" + map.size());
-            log.info("keySet=" + map.keySet());
+            log.info(id+": mapName=" + map.getName() + " size=" + map.size());
+            log.info(id+": keySet=" + map.keySet());
         }
     }
 }

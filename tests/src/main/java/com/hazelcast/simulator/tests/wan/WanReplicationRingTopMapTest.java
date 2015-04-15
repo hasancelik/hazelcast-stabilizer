@@ -66,9 +66,11 @@ public class WanReplicationRingTopMapTest {
             public void run() throws Exception {
                 IMap map = targetInstance.getMap(wanRepMapName);
                 assertEquals("mapName=" + map.getName() + " size ", clusterCount * keyCount, map.size());
+
                 for (int key = 0; key < clusterCount * keyCount; key++) {
                     assertEquals("mapName=" + map.getName() + " key=" + key, key, map.get(key));
                 }
+
             }
         });
     }
