@@ -23,6 +23,7 @@ import static com.hazelcast.simulator.tests.helpers.HazelcastTestUtils.isMemberN
 import static com.hazelcast.simulator.utils.TestUtils.assertTrueEventually;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * This test operates on a map which has a MapStore Configured.
@@ -169,6 +170,7 @@ public class MapStoreTest {
             final IMap map = targetInstance.getMap(basename);
 
             LOGGER.info(basename + ": map size  =" + map.size());
+            LOGGER.info(basename + ": mapStoreSize =" + mapStore.entrySet().size());
             LOGGER.info(basename + ": " + mapStore);
 
             assertTrueEventually(new AssertTask() {
@@ -178,7 +180,7 @@ public class MapStoreTest {
                         assertEquals(map.get(k), mapStore.get(k));
                     }
 
-                    assertEquals("sets should be equals", map.getAll(map.localKeySet()).entrySet(), mapStore.entrySet());
+                    assertEquals("sets should be equals", map.getAll(map.keySet()).entrySet(), mapStore.entrySet());
 
                     for (int k = putTTlKeyDomain; k < putTTlKeyDomain + putTTlKeyRange; k++) {
                         assertNull(basename + ": TTL key should not be in the map", map.get(k));
