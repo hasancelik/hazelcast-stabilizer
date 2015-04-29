@@ -39,10 +39,10 @@ public class MapStoreTest {
     public int keyCount = 10;
 
     // check these add up to 1
-    public double writeProb = 0.4;
-    public double getProb = 0.2;
-    public double getAsyncProb = 0.15;
-    public double deleteProb = 0.2;
+    public double writeProb = 0.6;
+    public double getProb = 0.4;
+    public double getAsyncProb = 0.0;
+    public double deleteProb = 0.0;
     public double destroyProb = 0.0;
 
     // check these add up to 1 (writeProb is split up into sub styles)
@@ -180,7 +180,7 @@ public class MapStoreTest {
                         assertEquals(map.get(k), mapStore.get(k));
                     }
 
-                    assertEquals("sets should be equals", map.getAll(map.keySet()).entrySet(), mapStore.entrySet());
+                    assertEquals("sets should be equals", map.getAll(map.localKeySet()).entrySet(), mapStore.entrySet());
 
                     for (int k = putTTlKeyDomain; k < putTTlKeyDomain + putTTlKeyRange; k++) {
                         assertNull(basename + ": TTL key should not be in the map", map.get(k));
