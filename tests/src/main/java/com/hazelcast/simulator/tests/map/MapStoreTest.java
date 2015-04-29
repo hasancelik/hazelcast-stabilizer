@@ -39,6 +39,7 @@ public class MapStoreTest {
     public int keyCount = 10;
 
     // check these add up to 1
+
     public double writeProb = 0.4;
     public double getProb = 0.4;
     public double getAsyncProb = 0.0;
