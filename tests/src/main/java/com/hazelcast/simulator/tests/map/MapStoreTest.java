@@ -49,16 +49,16 @@ public class MapStoreTest {
     public double destroyProb = 0.0;
 
     // check these add up to 1 (writeProb is split up into sub styles)
-    public double writeUsingPutProb = 0.7;
+    public double writeUsingPutProb = 0.4;
     public double writeUsingPutAsyncProb = 0.0;
-    public double writeUsingPutTTLProb = 0.0;
+    public double writeUsingPutTTLProb = 0.3;
     public double writeUsingPutIfAbsent = 0.15;
     public double writeUsingReplaceProb = 0.15;
 
     public int mapStoreMaxDelayMs = 0;
     public int mapStoreMinDelayMs = 0;
 
-    public int maxTTLExpireyMs = 3000;
+    public int maxTTLExpireyMs = 300;
     public int minTTLExpireyMs = 100;
 
     private int putTTlKeyDomain;
