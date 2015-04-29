@@ -10,6 +10,7 @@ import com.hazelcast.simulator.test.TestContext;
 import com.hazelcast.simulator.test.annotations.Run;
 import com.hazelcast.simulator.test.annotations.Setup;
 import com.hazelcast.simulator.test.annotations.Verify;
+import com.hazelcast.simulator.test.annotations.Warmup;
 import com.hazelcast.simulator.tests.map.helpers.MapOperationCounter;
 import com.hazelcast.simulator.tests.map.helpers.MapStoreWithCounter;
 import com.hazelcast.simulator.utils.AssertTask;
@@ -48,9 +49,9 @@ public class MapStoreTest {
     public double destroyProb = 0.0;
 
     // check these add up to 1 (writeProb is split up into sub styles)
-    public double writeUsingPutProb = 0.4;
+    public double writeUsingPutProb = 0.7;
     public double writeUsingPutAsyncProb = 0.0;
-    public double writeUsingPutTTLProb = 0.3;
+    public double writeUsingPutTTLProb = 0.0;
     public double writeUsingPutIfAbsent = 0.15;
     public double writeUsingReplaceProb = 0.15;
 
@@ -65,6 +66,7 @@ public class MapStoreTest {
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+    private IMap map;
 
     public MapStoreTest() {
     }
@@ -73,6 +75,7 @@ public class MapStoreTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
+        map = targetInstance.getMap(basename);
         putTTlKeyDomain = keyCount;
         putTTlKeyRange = keyCount;
         keys = new int[keyCount];
@@ -80,7 +83,7 @@ public class MapStoreTest {
         MapStoreWithCounter.setMinMaxDelayMs(mapStoreMinDelayMs, mapStoreMaxDelayMs);
         final Random random = new Random();
         for (int i = 0; i < keyCount; i++){
-            final int key = random.nextInt();
+            final int key = random.nextInt(keyCount);
             keys[i] = key;
         }
     }
@@ -104,7 +107,6 @@ public class MapStoreTest {
             while (!testContext.isStopped()) {
                 try {
                     final int key = keys[random.nextInt(keyCount)];
-                    final IMap map = targetInstance.getMap(basename);
 
                     double chance = random.nextDouble();
                     if ((chance -= writeProb) < 0) {
@@ -175,7 +177,6 @@ public class MapStoreTest {
             Thread.sleep(mapStoreMaxDelayMs * 2 + maxTTLExpireyMs * 2 + ((writeDelaySeconds * 2) * 1000));
 
             final MapStoreWithCounter mapStore = (MapStoreWithCounter) mapStoreConfig.getImplementation();
-            final IMap map = targetInstance.getMap(basename);
 
             LOGGER.info(basename + ": map size  =" + map.size());
             LOGGER.info(basename + ": mapStoreSize =" + mapStore.entrySet().size());
