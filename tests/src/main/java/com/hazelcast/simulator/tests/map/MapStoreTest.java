@@ -37,6 +37,7 @@ public class MapStoreTest {
     public String basename = this.getClass().getSimpleName();
     public int threadCount = 3;
     public int keyCount = 10;
+    public int[] keys;
 
     // check these add up to 1
 
@@ -74,8 +75,14 @@ public class MapStoreTest {
         targetInstance = testContext.getTargetInstance();
         putTTlKeyDomain = keyCount;
         putTTlKeyRange = keyCount;
+        keys = new int[keyCount];
 
         MapStoreWithCounter.setMinMaxDelayMs(mapStoreMinDelayMs, mapStoreMaxDelayMs);
+        final Random random = new Random();
+        for (int i = 0; i < keyCount; i++){
+            final int key = random.nextInt();
+            keys[i] = key;
+        }
     }
 
     @Run
@@ -96,7 +103,7 @@ public class MapStoreTest {
         public void run() {
             while (!testContext.isStopped()) {
                 try {
-                    final int key = random.nextInt(keyCount);
+                    final int key = keys[random.nextInt(keyCount)];
                     final IMap map = targetInstance.getMap(basename);
 
                     double chance = random.nextDouble();
