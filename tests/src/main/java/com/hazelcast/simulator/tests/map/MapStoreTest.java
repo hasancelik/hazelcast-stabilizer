@@ -177,7 +177,7 @@ public class MapStoreTest {
             final MapStoreWithCounter mapStore = (MapStoreWithCounter) mapStoreConfig.getImplementation();
 
             LOGGER.info(basename + ": map size  =" + map.size());
-            LOGGER.info(basename + ": map entries  =" + map.size());
+            LOGGER.info(basename + ": map entries  =" + map.entrySet());
             LOGGER.info(basename + ": mapStoreSize =" + mapStore.entrySet().size());
             LOGGER.info(basename + ": mapStore entries = " + mapStore.entrySet());
 
