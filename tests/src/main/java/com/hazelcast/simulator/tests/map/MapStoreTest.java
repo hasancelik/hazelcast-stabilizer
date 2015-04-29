@@ -107,12 +107,10 @@ public class MapStoreTest {
             while (!testContext.isStopped()) {
                 try {
                     final int key = keys[random.nextInt(keyCount)];
-
                     double chance = random.nextDouble();
                     if ((chance -= writeProb) < 0) {
 
                         final Object value = random.nextInt();
-
                         chance = random.nextDouble();
                         if ((chance -= writeUsingPutProb) < 0) {
                             map.put(key, value);
@@ -121,9 +119,9 @@ public class MapStoreTest {
                             map.putAsync(key, value);
                             count.putAsyncCount.incrementAndGet();
                         } else if ((chance -= writeUsingPutTTLProb) < 0) {
-                            long delayMs = minTTLExpireyMs + random.nextInt(maxTTLExpireyMs);
-                            int k = putTTlKeyDomain + random.nextInt(putTTlKeyRange);
-                            map.putTransient(k, delayMs, delayMs, TimeUnit.MILLISECONDS);
+                            long ttlMs = minTTLExpireyMs + random.nextInt(maxTTLExpireyMs);
+//                            int k = putTTlKeyDomain + random.nextInt(putTTlKeyRange);
+                            map.putTransient(key, ttlMs, ttlMs, TimeUnit.MILLISECONDS);
                             count.putTransientCount.incrementAndGet();
                         } else if ((chance -= writeUsingPutIfAbsent) < 0) {
                             map.putIfAbsent(key, value);
