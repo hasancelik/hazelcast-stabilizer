@@ -114,6 +114,13 @@ public final class TestUtils {
         assertTrueEventually(task, ASSERT_TRUE_EVENTUALLY_TIMEOUT);
     }
 
+    public static void assertEqualsByteArray(byte[] expected, byte[] current) {
+        assertEquals("Byte arrays' lengths not the same", expected.length, current.length);
+        for (int k = 0; k < expected.length; k++) {
+            assertEquals(k + "th index not equal", expected[k], current[k]);
+        }
+    }
+
     public static void printAllStackTraces() {
         for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
             System.err.println("Thread " + entry.getKey().getName());
