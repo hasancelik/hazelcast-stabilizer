@@ -9,14 +9,12 @@ import com.hazelcast.core.MessageListener;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.simulator.test.TestContext;
-import com.hazelcast.simulator.test.annotations.Run;
+import com.hazelcast.simulator.test.annotations.RunWithWorker;
 import com.hazelcast.simulator.test.annotations.Setup;
 import com.hazelcast.simulator.test.annotations.Verify;
 import com.hazelcast.simulator.utils.AssertTask;
-import com.hazelcast.simulator.utils.ThreadSpawner;
-import com.hazelcast.topic.ReliableMessageListener;
+import com.hazelcast.simulator.worker.tasks.AbstractMonotonicWorker;
 
-import static com.hazelcast.simulator.utils.CommonUtils.sleepRandomNanos;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +32,6 @@ public class ReliableTopicTest {
     public int listenersPerTopic = 2;
     public String basename = "reliableTopic";
 
-
     private IAtomicLong totalExpectedCounter;
     private ITopic[] topics;
     private TestContext testContext;
@@ -43,15 +40,17 @@ public class ReliableTopicTest {
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
+        final Random random = new Random();
+
         this.testContext = testContext;
         hz = testContext.getTargetInstance();
-
         totalExpectedCounter = hz.getAtomicLong(testContext.getTestId() + ":TotalExpectedCounter");
         topics = new ITopic[topicCount];
         listeners = new LinkedList<StressMessageListener>();
+
         int listenerIdCounter = 0;
         for (int k = 0; k < topics.length; k++) {
-            ITopic<Long> topic = hz.getReliableTopic(basename + "-" + k);
+            ITopic<MessageEntity> topic = hz.getReliableTopic(basename + "-" + k);
             topics[k] = topic;
             for (int l = 0; l < listenersPerTopic; l++) {
                 StressMessageListener topicListener = new StressMessageListener(listenerIdCounter);
@@ -62,43 +61,34 @@ public class ReliableTopicTest {
         }
     }
 
-    @Run
-    public void run() {
-        ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
-        for (int k = 0; k < threadCount; k++) {
-            spawner.spawn(new Worker());
-        }
-        spawner.awaitCompletion();
-    }
-
-    private class Worker implements Runnable {
-        private final Random random = new Random();
+    private class Worker extends AbstractMonotonicWorker {
+        final Random random = new Random();
+        long count = 0;
+        long totalCounter = 0;
 
         @Override
-        public void run() {
-            long count = 0;
-            while (!testContext.isStopped()) {
+        protected void timeStep() {
+            ITopic topic = getRandomTopic();
+            MessageEntity msg = new MessageEntity(Thread.currentThread(),count);
+            totalCounter += msg.counter;
+            count++;
+            topic.publish(msg);
+        }
 
-                ITopic topic = getRandomTopic();
-                long msg = nextMessage();
-                count += msg;
-                topic.publish(msg);
-            }
-            totalExpectedCounter.addAndGet(count);
+        @Override
+        protected void afterRun() {
+            totalExpectedCounter.addAndGet(totalCounter);
         }
 
         private ITopic getRandomTopic() {
             int index = random.nextInt(topics.length);
             return topics[index];
         }
+    }
 
-        private long nextMessage() {
-            long msg = random.nextLong() % 1000;
-            if (msg < 0) {
-                msg = -msg;
-            }
-            return msg;
-        }
+    @RunWithWorker
+    public Worker createWorker() {
+        return new Worker();
     }
 
     @Verify(global = true)
@@ -118,7 +108,25 @@ public class ReliableTopicTest {
         });
     }
 
-    public class StressMessageListener implements ReliableMessageListener<Long> {
+    private class MessageEntity {
+        private Runnable thread;
+        private long counter;
+
+        public MessageEntity(Runnable thread, long counter) {
+            this.thread = thread;
+            this.counter = counter;
+        }
+
+        @Override
+        public String toString() {
+            return "MessageEntity{" +
+                    "thread=" + thread +
+                    ", counter=" + counter +
+                    '}';
+        }
+    }
+
+    private class StressMessageListener implements MessageListener<MessageEntity> {
         private final int id;
         private long received = 0;
 
@@ -127,14 +135,13 @@ public class ReliableTopicTest {
         }
 
         @Override
-        public void onMessage(Message<Long> message) {
-            final Random random = new Random();
+        public void onMessage(Message<MessageEntity> message) {
 
             if (received % 100000 == 0) {
-                LOGGER.info(toString() + " is at: " + received);
+                LOGGER.info(toString() + " is at: " + message.toString());
             }
 
-            received += message.getMessageObject();
+            received += message.getMessageObject().counter;
         }
 
         @Override
@@ -142,26 +149,6 @@ public class ReliableTopicTest {
             return "StressMessageListener{" +
                     "id=" + id +
                     '}';
-        }
-
-        @Override
-        public long retrieveInitialSequence() {
-            return 0;
-        }
-
-        @Override
-        public void storeSequence(long l) {
-
-        }
-
-        @Override
-        public boolean isLossTolerant() {
-            return false;
-        }
-
-        @Override
-        public boolean isTerminal(Throwable throwable) {
-            return false;
         }
     }
 
