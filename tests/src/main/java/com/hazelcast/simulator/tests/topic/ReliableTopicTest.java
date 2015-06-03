@@ -11,6 +11,8 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
+import com.hazelcast.nio.serialization.DataSerializableFactory;
+import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.hazelcast.simulator.test.TestContext;
 import com.hazelcast.simulator.test.annotations.RunWithWorker;
 import com.hazelcast.simulator.test.annotations.Setup;
@@ -19,7 +21,6 @@ import com.hazelcast.simulator.utils.AssertTask;
 import com.hazelcast.simulator.worker.tasks.AbstractMonotonicWorker;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -74,7 +75,7 @@ public class ReliableTopicTest {
         @Override
         protected void timeStep() {
             ITopic topic = getRandomTopic();
-            MessageEntity msg = new MessageEntity(Thread.currentThread().toString(),count);
+            MessageEntity msg = new MessageEntity(Thread.currentThread().toString(), count);
             totalCounter += msg.counter;
             count++;
             topic.publish(msg);
@@ -113,9 +114,22 @@ public class ReliableTopicTest {
         });
     }
 
-    private class MessageEntity implements DataSerializable {
+    public static class MessageDataSerializableFactory implements DataSerializableFactory {
+
+        public static final int FACTORY_ID = 18;
+
+        @Override
+        public IdentifiedDataSerializable create(int i) {
+            return new MessageEntity();
+        }
+    }
+
+    private static class MessageEntity implements IdentifiedDataSerializable {
         private String thread;
         private long counter;
+
+        public MessageEntity() {
+        }
 
         public MessageEntity(String thread, long counter) {
             this.thread = thread;
@@ -141,6 +155,16 @@ public class ReliableTopicTest {
         public void readData(ObjectDataInput objectDataInput) throws IOException {
             thread = objectDataInput.readUTF();
             counter = objectDataInput.readLong();
+        }
+
+        @Override
+        public int getFactoryId() {
+            return MessageDataSerializableFactory.FACTORY_ID;
+        }
+
+        @Override
+        public int getId() {
+            return 0;
         }
     }
 
