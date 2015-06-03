@@ -8,6 +8,9 @@ import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.nio.ObjectDataInput;
+import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.simulator.test.TestContext;
 import com.hazelcast.simulator.test.annotations.RunWithWorker;
 import com.hazelcast.simulator.test.annotations.Setup;
@@ -15,6 +18,8 @@ import com.hazelcast.simulator.test.annotations.Verify;
 import com.hazelcast.simulator.utils.AssertTask;
 import com.hazelcast.simulator.worker.tasks.AbstractMonotonicWorker;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -69,7 +74,7 @@ public class ReliableTopicTest {
         @Override
         protected void timeStep() {
             ITopic topic = getRandomTopic();
-            MessageEntity msg = new MessageEntity(Thread.currentThread(),count);
+            MessageEntity msg = new MessageEntity(Thread.currentThread().toString(),count);
             totalCounter += msg.counter;
             count++;
             topic.publish(msg);
@@ -108,11 +113,11 @@ public class ReliableTopicTest {
         });
     }
 
-    private class MessageEntity {
-        private Runnable thread;
+    private class MessageEntity implements DataSerializable {
+        private String thread;
         private long counter;
 
-        public MessageEntity(Runnable thread, long counter) {
+        public MessageEntity(String thread, long counter) {
             this.thread = thread;
             this.counter = counter;
         }
@@ -123,6 +128,19 @@ public class ReliableTopicTest {
                     "thread=" + thread +
                     ", counter=" + counter +
                     '}';
+        }
+
+        @Override
+        public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
+            objectDataOutput.writeUTF(thread);
+            objectDataOutput.writeLong(counter);
+
+        }
+
+        @Override
+        public void readData(ObjectDataInput objectDataInput) throws IOException {
+            thread = objectDataInput.readUTF();
+            counter = objectDataInput.readLong();
         }
     }
 
