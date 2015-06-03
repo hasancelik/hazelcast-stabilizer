@@ -108,7 +108,7 @@ public class ReliableTopicTest {
         });
     }
 
-    private class MessageEntity {
+    public class MessageEntity {
         private Runnable thread;
         private long counter;
 
@@ -126,7 +126,7 @@ public class ReliableTopicTest {
         }
     }
 
-    private class StressMessageListener implements MessageListener<MessageEntity> {
+    public class StressMessageListener implements MessageListener<MessageEntity> {
         private final int id;
         private long received = 0;
 
