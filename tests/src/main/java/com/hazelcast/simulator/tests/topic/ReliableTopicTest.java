@@ -100,7 +100,7 @@ public class ReliableTopicTest {
     @Verify(global = true)
     public void verify() {
 
-        final long expectedCount = totalExpectedCounter.get();
+        final long expectedCount = listenersPerTopic * totalExpectedCounter.get();
 
         assertTrueEventually(new AssertTask() {
             @Override
