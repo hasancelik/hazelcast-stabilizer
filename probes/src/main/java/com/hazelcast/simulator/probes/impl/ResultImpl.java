@@ -19,6 +19,8 @@ import com.hazelcast.simulator.probes.Result;
 import org.HdrHistogram.Histogram;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,5 +110,26 @@ public class ResultImpl implements Result {
             closeQuietly(stream);
             closeQuietly(outputStream);
         }
+    }
+
+    @Override
+    public void toHistogramFile(String probeName, String testId) {
+        Histogram histogram = probeHistogramMap.get(probeName);
+        if (histogram == null) {
+            return;
+        }
+        String fileName = testId + "-" + probeName + ".hgrm";
+        PrintStream printStream = null;
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(fileName, true);
+            printStream = new PrintStream(fileOutputStream);
+            histogram.outputPercentileDistribution(printStream, 1.0);
+        } catch (Exception e) {
+            return;
+        }finally {
+            closeQuietly(printStream);
+        }
+
     }
 }

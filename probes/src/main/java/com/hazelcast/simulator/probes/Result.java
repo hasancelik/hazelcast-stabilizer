@@ -36,4 +36,6 @@ public interface Result {
     Set<String> probeNames();
 
     String toHumanString(String probeName);
+
+    void toHistogramFile(String probeName, String testId);
 }

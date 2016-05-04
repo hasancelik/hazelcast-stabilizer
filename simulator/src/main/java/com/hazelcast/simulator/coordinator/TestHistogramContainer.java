@@ -68,6 +68,9 @@ public class TestHistogramContainer {
         if (!result.isEmpty()) {
             String fileName = "probes-" + testSuiteId + '_' + testCaseId + ".xml";
             ResultXmlUtils.toXml(result, new File(fileName));
+            for(String probeName : result.probeNames()){
+                result.toHistogramFile(probeName,testCaseId);
+            }
             logProbesResultInHumanReadableFormat(testCaseId, result);
         }
     }
