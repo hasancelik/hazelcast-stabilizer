@@ -19,6 +19,7 @@ import com.hazelcast.simulator.test.TestException;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.HistogramLogReader;
 import org.HdrHistogram.HistogramLogWriter;
+import org.apache.log4j.Logger;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -49,6 +50,8 @@ import static com.hazelcast.simulator.worker.performance.PerformanceUtils.writeT
 final class PerformanceTracker {
 
     private final Map<String, HistogramLogWriter> histogramLogWriterMap = new HashMap<String, HistogramLogWriter>();
+
+    private static final Logger LOGGER = Logger.getLogger(PerformanceTracker.class);
 
     private final File throughputFile;
     private final long testStartedTimestamp;
@@ -147,9 +150,10 @@ final class PerformanceTracker {
         for (Map.Entry<String, Histogram> histogramEntry : intervalHistogramMap.entrySet()) {
             String probeName = histogramEntry.getKey();
             Histogram histogram = histogramEntry.getValue();
-            File latencyFile = getLatencyFile(testId, probeName);
+            File latencyHistogramFile = getLatencyHistogramFile(testId, probeName);
+            LOGGER.info("Latency file is:" + latencyHistogramFile);
             try {
-                fileOutputStream = new FileOutputStream(latencyFile, true);
+                fileOutputStream = new FileOutputStream(latencyHistogramFile, true);
                 printStream = new PrintStream(fileOutputStream);
                 histogram.outputPercentileDistribution(printStream, 1.0);
             } catch (Exception e) {
@@ -217,5 +221,9 @@ final class PerformanceTracker {
 
     private static File getLatencyFile(String testId, String probeName) {
         return new File("latency-" + testId + '-' + probeName + ".txt");
+    }
+
+    private static File getLatencyHistogramFile(String testId, String probeName) {
+        return new File("latency-" + testId + '-' + probeName + ".hgrm");
     }
 }
