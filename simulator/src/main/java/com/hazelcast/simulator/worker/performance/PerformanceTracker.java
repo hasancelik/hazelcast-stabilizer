@@ -150,8 +150,7 @@ final class PerformanceTracker {
         for (Map.Entry<String, Histogram> histogramEntry : intervalHistogramMap.entrySet()) {
             String probeName = histogramEntry.getKey();
             Histogram histogram = histogramEntry.getValue();
-            File latencyHistogramFile = getLatencyHistogramFile(testId, probeName);
-            LOGGER.info("Latency file is:" + latencyHistogramFile);
+            String latencyHistogramFile = getLatencyHistogramFileName(testId, probeName);
             try {
                 fileOutputStream = new FileOutputStream(latencyHistogramFile, true);
                 printStream = new PrintStream(fileOutputStream);
@@ -223,7 +222,7 @@ final class PerformanceTracker {
         return new File("latency-" + testId + '-' + probeName + ".txt");
     }
 
-    private static File getLatencyHistogramFile(String testId, String probeName) {
-        return new File("latency-" + testId + '-' + probeName + ".hgrm");
+    private static String getLatencyHistogramFileName(String testId, String probeName) {
+        return new String("latency-" + testId + '-' + probeName + ".hgrm");
     }
 }

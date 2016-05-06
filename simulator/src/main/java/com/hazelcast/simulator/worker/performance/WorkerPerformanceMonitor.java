@@ -139,7 +139,6 @@ public class WorkerPerformanceMonitor {
                 PerformanceTracker tracker = trackerEntry.getValue();
 
                 Map<String, String> histograms = tracker.aggregateIntervalHistograms(testId);
-                tracker.writeIntervalHistogramIntoSeparateHistogramFile(testId);
                 if (!histograms.isEmpty()) {
                     TestHistogramOperation operation = new TestHistogramOperation(testId, histograms);
                     serverConnector.write(SimulatorAddress.COORDINATOR, operation);
@@ -230,9 +229,12 @@ public class WorkerPerformanceMonitor {
             double globalIntervalThroughput = 0;
 
             // performance stats per Simulator Test
-            for (PerformanceTracker tracker : trackerMap.values()) {
+            for (Map.Entry<String, PerformanceTracker> trackerEntry : trackerMap.entrySet()) {
+                String testId = trackerEntry.getKey();
+                PerformanceTracker tracker = trackerEntry.getValue();
                 if (tracker.getAndResetIsUpdated()) {
                     tracker.writeStatsToFile(dateString);
+                    tracker.writeIntervalHistogramIntoSeparateHistogramFile(testId);
 
                     globalIntervalOperationCount += tracker.getIntervalOperationCount();
                     globalOperationsCount += tracker.getTotalOperationCount();
