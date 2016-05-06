@@ -139,6 +139,7 @@ public class WorkerPerformanceMonitor {
                 PerformanceTracker tracker = trackerEntry.getValue();
 
                 Map<String, String> histograms = tracker.aggregateIntervalHistograms(testId);
+                tracker.writeIntervalHistogramIntoSeparateHistogramFile(testId);
                 if (!histograms.isEmpty()) {
                     TestHistogramOperation operation = new TestHistogramOperation(testId, histograms);
                     serverConnector.write(SimulatorAddress.COORDINATOR, operation);

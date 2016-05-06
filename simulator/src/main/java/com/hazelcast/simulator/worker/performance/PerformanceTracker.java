@@ -22,7 +22,9 @@ import org.HdrHistogram.HistogramLogWriter;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +34,7 @@ import java.util.zip.Deflater;
 
 import static com.hazelcast.simulator.probes.impl.ProbeImpl.LATENCY_PRECISION;
 import static com.hazelcast.simulator.probes.impl.ProbeImpl.MAXIMUM_LATENCY;
+import static com.hazelcast.simulator.utils.CommonUtils.closeQuietly;
 import static com.hazelcast.simulator.worker.performance.PerformanceUtils.ONE_SECOND_IN_MILLIS;
 import static com.hazelcast.simulator.worker.performance.PerformanceUtils.writeThroughputHeader;
 import static com.hazelcast.simulator.worker.performance.PerformanceUtils.writeThroughputStats;
@@ -136,6 +139,25 @@ final class PerformanceTracker {
     PerformanceState createPerformanceState() {
         return new PerformanceState(totalOperationCount, intervalThroughput, totalThroughput,
                 intervalAvgLatency, intervalPercentileLatency, intervalMaxLatency);
+    }
+
+    void writeIntervalHistogramIntoSeparateHistogramFile(String testId) {
+        PrintStream printStream = null;
+        FileOutputStream fileOutputStream = null;
+        for (Map.Entry<String, Histogram> histogramEntry : intervalHistogramMap.entrySet()) {
+            String probeName = histogramEntry.getKey();
+            Histogram histogram = histogramEntry.getValue();
+            File latencyFile = getLatencyFile(testId, probeName);
+            try {
+                fileOutputStream = new FileOutputStream(latencyFile, true);
+                printStream = new PrintStream(fileOutputStream);
+                histogram.outputPercentileDistribution(printStream, 1.0);
+            } catch (Exception e) {
+                return;
+            } finally {
+                closeQuietly(printStream);
+            }
+        }
     }
 
     Map<String, String> aggregateIntervalHistograms(String testId) {
