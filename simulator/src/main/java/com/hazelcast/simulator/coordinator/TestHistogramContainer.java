@@ -24,6 +24,8 @@ import org.HdrHistogram.Histogram;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,6 +82,8 @@ public class TestHistogramContainer {
             return new ResultImpl(testCaseId, 0, 0.0d);
         }
         Result result = new ResultImpl(testCaseId, state.getOperationCount(), state.getTotalThroughput());
+        PrintStream printStream = null;
+        FileOutputStream fileOutputStream = null;
         for (ConcurrentMap<String, Map<String, String>> testHistogramMap : workerTestProbeHistogramMap.values()) {
             Map<String, String> probeHistogramMap = testHistogramMap.get(testCaseId);
             if (probeHistogramMap == null) {
@@ -88,12 +92,18 @@ public class TestHistogramContainer {
             for (Map.Entry<String, String> mapEntry : probeHistogramMap.entrySet()) {
                 String probeName = mapEntry.getKey();
                 String encodedHistogram = mapEntry.getValue();
+                String fileName = testCaseId + "-" + probeName + "-interval.hgrm";
                 try {
                     ByteBuffer buffer = ByteBuffer.wrap(parseBase64Binary(encodedHistogram));
                     Histogram histogram = decodeFromCompressedByteBuffer(buffer, 0);
+                    fileOutputStream = new FileOutputStream(fileName, true);
+                    printStream = new PrintStream(fileOutputStream);
+                    histogram.outputPercentileDistribution(printStream, 1.0);
                     result.addHistogram(probeName, histogram);
                 } catch (Exception e) {
                     LOGGER.warn("Could not decode histogram from test " + testCaseId + " of probe " + probeName);
+                }finally {
+                    printStream.close();
                 }
             }
         }
